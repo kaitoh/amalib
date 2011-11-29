@@ -1,0 +1,141 @@
+<html>
+<head>
+<script>
+    var current_library = {};
+    var tab_id = null;
+    var asin = 0;
+
+    /* Table of result icon */
+    icon = { ok : "Circle_Green.png",        // The book is exist and you can borrow it.
+             not_left : "Circle_Yellow.png", // Thee book is exist in the Library, but not left.
+             not_exist : "Circle_Grey.png"   // The book is no exist in the Library.
+        };
+
+    /* Structure of Libraries */
+    libraries = { saitama:{
+                    url: "https://www2.lib.city.saitama.jp/licsxp-opac/WOpacMnuTopInitAction.do?WebLinkFlag=1&moveToGamenId=tifschcmpd",
+                    action: "https://www2.lib.city.saitama.jp/licsxp-opac/WOpacTifSchCmpdExecAction.do?tifschcmpd=1",
+                    create_form: create_form_data_saitama,
+                    parse_func: get_stock_info_saitama
+                  },
+                  shinagawa:{
+                    url: "http://lib.city.shinagawa.tokyo.jp/cgi-bin/Sopcsmin.sh",
+                    action: "http://lib.city.shinagawa.tokyo.jp/cgi-bin/Sopcsken.sh?",
+                    create_form: create_form_data_shinagawa,
+                    parse_func: get_stock_info_shinagawa
+                  }
+                };
+
+
+    function create_form_data_saitama(isbn) {
+        return "hash=&returnid=&gamenid=tiles.WTifSchCmpd&chkflg=check&loccodschkflg=nocheck&langcodschkflg=nocheck&mngshus=1&mngshus=2&mngshus=3&mngshus=4&mngshus=5&mngshus=6&mngshus=7&mngshus=8&condition1=0&condition1Text=&range1=0&mixing1=0&condition2=1&condition2Text=&range2=0&mixing2=0&condition4=2&condition4Text=&range4=0&mixing4=0&condition5=3&condition5Text=&range5=0&mixing5=0&condition3=6&condition3Text=" + isbn + "&jyanruLabel=&yearselect=0&yearstart=&monthstart=&yearend=&monthend=&dispmaxnum=10&disporder=0";
+    }
+
+    function create_form_data_shinagawa(isbn) {
+        return "p_mode=1&g_mode=0&ryno=&c_key=&c_date=&list_cnt=10&mad_list_cnt=10&brws=ncdet&ktyp9=shk|atk|spk|kek&itfg9=c&ser_type=0&stkb=&sgid=spno&srsl1=1&srsl2=2&srsl3=3&ktyp0=shk&key0=&itfg0=c&ron0=a&ktyp1=atk&key1=&itfg1=c&ron1=a&ktyp2=spk&key2=&itfg2=c&ron2=a&ktyp3=ser&key3=&itfg3=c&ron3=a&ktyp4=shk|ser|atk|spk|kek|kjk&key4=&itfg4=c&tgid=tyo:010A&tkey=" + isbn + "&kkey=&skey=&srkbs=";
+    }
+
+    function get_stock_info_saitama(body) {
+        var tooltip_title = "ë†èëÇ»Çµ";
+        var icon_path = icon.not_exist;
+
+        var infos = body.getElementsByClassName("info");
+        if( infos.length == 2 ) {
+            tbl = infos[1];
+            left_book_num = tbl.rows(0).children[3].innerHTML;
+
+            tbl_elements = tbl.rows(0).children;
+            tooltip_title = "";
+            for(i = 0 ; i < tbl_elements.length ; i += 2) {
+                tooltip_title += tbl_elements[i].innerHTML + ":" + tbl_elements[i+1].innerHTML + " ";
+            }
+
+            if( parseInt(left_book_num) > 0 ) {
+                icon_path = icon.ok;
+            } else {
+                icon_path = icon.not_left;
+            }
+        }
+        return {icon:icon_path, tooltip:tooltip_title};
+    }
+
+    function get_stock_info_shinagawa(body) {
+        var tooltip_title = "ë†èëÇ»Çµ";
+        var icon_path = icon.not_exist;
+
+        var infos = body.getElementsByClassName("fontDef");
+        if( infos.length == 3 ) {
+            tooltip_title = "ë†èëÇ†ÇË";
+            stock = infos[2].children[5].innerHTML;
+            if(stock.search("Å~") > 0) {
+                icon_path = icon.ok;
+            } else {
+                icon_path = icon.not_left;
+            }
+        }
+        return {icon:icon_path, tooltip:tooltip_title};
+    }
+
+    function search_in_lib(library, isbn) {
+      if(library == undefined) { return; }
+
+      var form_data = library.create_form(isbn);
+
+      var dummy_xhr = new XMLHttpRequest();
+      dummy_xhr.open("GET", library.url, false);
+      dummy_xhr.send(null); 
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", library.action, true);
+      xhr.onload = show_library_stock;
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.send(form_data); 
+
+      /* on end of XHR */
+      function show_library_stock() {
+          if(xhr.status == 200) {
+              document.body.innerHTML = "";
+              document.body.insertAdjacentHTML("beforeEnd", xhr.responseText);  // This is to parse "xhr.responseText"
+
+              var res = library.parse_func(document.body);
+
+              var icon_detail = {path:res.icon,tabId:tab_id};
+              var tooltip_detail = {title:res.tooltip, tabId:tab_id};
+
+              chrome.pageAction.setIcon(icon_detail);
+              chrome.pageAction.setTitle(tooltip_detail);
+          }
+      }
+
+    };
+
+    chrome.extension.onRequest.addListener(
+        function(request, sender, sendResponse) {
+            chrome.tabs.getSelected(null, function(tab) { tab_id = tab.id; chrome.pageAction.show(tab_id); });
+            asin = request.asin;
+            if( asin != undefined) {
+                current_library = libraries[localStorage.default_library];
+                if(current_library == undefined) {
+                    current_library = libraries.saitama;
+                }
+
+                search_in_lib(current_library, asin);
+            }
+            sendResponse({}); //return empty response
+        }
+    );
+
+    chrome.pageAction.onClicked.addListener(
+        function(tab){ 
+            if( current_library != undefined) {
+                chrome.tabs.create({url:current_library.action+"@post:"+current_library.create_form(asin)}, function(tab){});
+            }
+        }
+    );
+</script>
+</head>
+
+<body>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+<html>
+<head><title>AmaLib Options</title></head>
+<script type="text/javascript">
+
+// Saves options to localStorage.
+function save_options() {
+  var select = document.getElementById("default_library");
+  var library = select.children[select.selectedIndex].value;
+  localStorage["default_library"] = library;
+
+  // Update status to let user know options were saved.
+  var status = document.getElementById("status");
+  status.innerHTML = "Options Saved.";
+  setTimeout(function() {
+    status.innerHTML = "";
+  }, 750);
+}
+
+// Restores select box state to saved value from localStorage.
+function restore_options() {
+  var library = localStorage["default_library"];
+  if (!library) {
+    return;
+  }
+  var select = document.getElementById("default_library");
+  for (var i = 0; i < select.children.length; i++) {
+    var child = select.children[i];
+    if (child.value == library) {
+      child.selected = "true";
+      break;
+    }
+  }
+}
+
+</script>
+
+<body onload="restore_options()">
+
+ƒfƒtƒHƒ‹ƒg‚Ì}‘ŠÙ:
+<select id="default_library">
+ <option value="saitama">‚³‚¢‚½‚Üs}‘ŠÙ</option>
+ <option value="shinagawa">•iì‹æ—§}‘ŠÙ</option>
+</select>
+
+<br>
+<button onclick="save_options()">•Û‘¶</button>
+</body>
+</html>

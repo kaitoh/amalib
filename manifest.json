@@ -1,0 +1,19 @@
+{
+    "name": "AmaLib",
+    "version": "0.2",
+    "description": "Amazon to Library",
+    "background_page": "bg.html",
+    "permissions": ["tabs", "https://www2.lib.city.saitama.jp/", "http://lib.city.shinagawa.tokyo.jp/", "http://www.amazon.co.jp/"],
+	"options_page": "options.html",
+    "page_action": {
+        "default_icon": "ajax-loader.gif",
+        "name": "Searching..."
+    },
+
+    "content_scripts": [
+      {
+        "matches": ["http://www.amazon.co.jp/*"],
+        "js": ["amalib_content.js"]
+      }
+    ]
+}
