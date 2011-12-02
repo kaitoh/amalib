@@ -42,9 +42,9 @@
         var infos = body.getElementsByClassName("info");
         if( infos.length == 2 ) {
             tbl = infos[1];
-            left_book_num = tbl.rows(0).children[3].innerHTML;
+            left_book_num = tbl.rows[0].children[3].innerHTML;
 
-            tbl_elements = tbl.rows(0).children;
+            tbl_elements = tbl.rows[0].children;
             tooltip_title = "";
             for(i = 0 ; i < tbl_elements.length ; i += 2) {
                 tooltip_title += tbl_elements[i].innerHTML + ":" + tbl_elements[i+1].innerHTML + " ";
