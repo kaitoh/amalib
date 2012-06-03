@@ -1,6 +1,6 @@
 {
     "name": "AmaLib",
-    "version": "0.2",
+    "version": "0.4",
     "description": "Amazon to Library",
     "background_page": "bg.html",
     "permissions": ["tabs", "https://www2.lib.city.saitama.jp/", "http://lib.city.shinagawa.tokyo.jp/", "http://www.amazon.co.jp/"],

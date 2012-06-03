@@ -28,14 +28,6 @@ function show_asin_log() {
     }
 }
 
-function delete_log() {
-    var list = get_ls_asin_list();
-    for(var i = 0 ; i < list.length ; i++) {
-        list[i].log = undefined;
-    }
-    set_ls_asin_list(list);
-}
-
 function force_clear_log() {
     delete localStorage.asin_list;
 }
@@ -52,8 +44,7 @@ History:
 </div>
 <br>
 
-<button onclick="force_clear_log()">All delete!!</button>
-<button onclick="delete_log()">delete</button>
+<button onclick="force_clear_log()">delete!!</button>
 
 </body>
 </html>
