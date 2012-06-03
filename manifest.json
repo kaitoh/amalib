@@ -10,10 +10,16 @@
         "name": "Searching..."
     },
 
+    "omnibox": { "keyword" : "amalib" },
+    "icons": {
+        "16": "Circle_Green.png"
+    },
+
     "content_scripts": [
       {
         "matches": ["http://www.amazon.co.jp/*"],
         "js": ["amalib_content.js"]
       }
     ]
+
 }

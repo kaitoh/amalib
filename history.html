@@ -1,0 +1,59 @@
+<html>
+<head><title>AmaLib Options</title></head>
+<script type="text/javascript">
+
+function get_ls_asin_list() {
+    if(localStorage["asin_list"] == undefined) {
+        return [];
+    } else {
+        return JSON.parse(localStorage["asin_list"]);
+    }
+}
+function set_ls_asin_list(list) {
+    localStorage["asin_list"] = JSON.stringify(list);
+}
+
+function show_asin_log() {
+    var d = document.getElementById("asin_log_div");
+    var asin_list = get_ls_asin_list();
+
+    for(var i = 0 ; i < asin_list.length ; i++) {
+        if( asin_list[i].log != undefined ) {
+            d.innerHTML += "<img src=" + asin_list[i].log.icon + " width=20px height=20px >";
+            d.innerHTML += "<a href=" + asin_list[i].url + ">" + asin_list[i].title + "</a>";
+            d.innerHTML += " :   " + asin_list[i].log.tooltip;
+            // d.innerHTML += " :[" + asin_list[i].log.date+"]";
+            d.innerHTML += "<br>";
+        }
+    }
+}
+
+function delete_log() {
+    var list = get_ls_asin_list();
+    for(var i = 0 ; i < list.length ; i++) {
+        list[i].log = undefined;
+    }
+    set_ls_asin_list(list);
+}
+
+function force_clear_log() {
+    delete localStorage.asin_list;
+}
+
+function onload() {
+    show_asin_log();
+}
+</script>
+
+<body onload="onload()">
+
+History:
+<div id="asin_log_div">
+</div>
+<br>
+
+<button onclick="force_clear_log()">All delete!!</button>
+<button onclick="delete_log()">delete</button>
+
+</body>
+</html>

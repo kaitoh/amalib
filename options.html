@@ -32,9 +32,12 @@ function restore_options() {
   }
 }
 
+function onload() {
+    restore_options();
+}
 </script>
 
-<body onload="restore_options()">
+<body onload="onload()">
 
 デフォルトの図書館:
 <select id="default_library">
@@ -44,5 +47,10 @@ function restore_options() {
 
 <br>
 <button onclick="save_options()">保存</button>
+
+<br>
+<br>
+<a href="history.html">History</a>
+
 </body>
 </html>
