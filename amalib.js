@@ -169,22 +169,6 @@ function get_book_status(library, isbn) {
   return parse_libsearch(library, xhr);
 };
 
-/**
- * asin_list is hash array
- *  = [ {}, {}, ... ]
- */
-function get_ls_asin_list() {
-    if(localStorage["asin_list"] == undefined) {
-        return [];
-    } else {
-        return JSON.parse(localStorage["asin_list"]);
-    }
-}
-
-function set_ls_asin_list(list) {
-    localStorage["asin_list"] = JSON.stringify(list);
-}
-
 function update_asin_list(isbn, res) {
     var list = get_ls_asin_list();
     var i = search_asin(list, isbn);
@@ -194,15 +178,6 @@ function update_asin_list(isbn, res) {
     } else {
         console.debug("update error");
     }
-}
-
-function search_asin(a, asin) {
-    for(var i = 0 ; i < a.length ; i++) {
-        if(a[i].asin == asin) { 
-            return i;
-        }
-    }
-    return -1;
 }
 
 /**
