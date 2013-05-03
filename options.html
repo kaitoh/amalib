@@ -1,43 +1,8 @@
 <html>
 <head><title>AmaLib Options</title></head>
-<script type="text/javascript">
+<script type="text/javascript" src="options.js"></script>
 
-// Saves options to localStorage.
-function save_options() {
-  var select = document.getElementById("default_library");
-  var library = select.children[select.selectedIndex].value;
-  localStorage["default_library"] = library;
-
-  // Update status to let user know options were saved.
-  var status = document.getElementById("status");
-  status.innerHTML = "Options Saved.";
-  setTimeout(function() {
-    status.innerHTML = "";
-  }, 750);
-}
-
-// Restores select box state to saved value from localStorage.
-function restore_options() {
-  var library = localStorage["default_library"];
-  if (!library) {
-    return;
-  }
-  var select = document.getElementById("default_library");
-  for (var i = 0; i < select.children.length; i++) {
-    var child = select.children[i];
-    if (child.value == library) {
-      child.selected = "true";
-      break;
-    }
-  }
-}
-
-function onload() {
-    restore_options();
-}
-</script>
-
-<body onload="onload()">
+<body>
 
 デフォルトの図書館:
 <select id="default_library">
@@ -46,11 +11,12 @@ function onload() {
 </select>
 
 <br>
-<button onclick="save_options()">保存</button>
+<button id="save">保存</button>
 
 <br>
 <br>
 <a href="history.html">History</a>
 
+<div id="status"></div>
 </body>
 </html>
